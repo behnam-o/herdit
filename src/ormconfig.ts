@@ -1,12 +1,13 @@
 import { createConnection } from "typeorm";
 import { Post } from "./entities/Post";
+import credentials from "./credentials";
 export default {
     "type": "postgres",
-    "host": "localhost",
-    "port": 5432,
-    "username": "",
-    "password": "",
-    "database": "",
+    "host": credentials.db.host,
+    "port": credentials.db.port,
+    "username": credentials.db.username,
+    "password": credentials.db.password,
+    "database": credentials.db.database,
     "synchronize": true,
     "logging": true,
     "entities": [
