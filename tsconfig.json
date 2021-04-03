@@ -2,6 +2,9 @@
     "compilerOptions": {
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "target": "es2018",
+        "module": "commonjs",
+        "lib": ["es2018", "esnext.asynciterable"],
     }
 }
