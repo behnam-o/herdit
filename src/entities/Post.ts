@@ -10,11 +10,11 @@ export class Post {
   id!: number;
   
   @Field( () => Date)
-  @Column()
-  createdAt:Date;
+  @Column({default:()=>'CURRENT_TIMESTAMP'})
+  createdAt:Date = new Date();
 
   @Field(() => Date)
-  @Column()
+  @Column({default:()=>'CURRENT_TIMESTAMP'})
   updatedAt:Date;
 
   @Field(() => String)
