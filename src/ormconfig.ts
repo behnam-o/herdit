@@ -1,6 +1,7 @@
 import { createConnection } from "typeorm";
 import { Post } from "./entities/Post";
 import credentials from "./credentials";
+import { User } from "./entities/User";
 export default {
     "type": "postgres",
     "host": credentials.db.host,
@@ -11,12 +12,13 @@ export default {
     "synchronize": true,
     "logging": true,
     "entities": [
-        Post
+        Post,
+        User
     ],
     "migrations": [
-        "src/migration/*.js"
+        "src/migration/*.ts"
     ],
-    "subscribers": [
-        "src/subscriber/*.js"
-    ]
+    "cli": {
+        "migrationsDir": "src/migration"
+    }
 } as unknown as Parameters<typeof createConnection>[0];

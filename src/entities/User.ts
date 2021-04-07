@@ -3,7 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
 @ObjectType()
 @Entity()
-export class Post {
+export class User {
 
   @Field( ()=>Int )
   @PrimaryGeneratedColumn()
@@ -18,6 +18,10 @@ export class Post {
   updatedAt:Date;
 
   @Field()
+  @Column({unique:true})
+  username!: string;
+
   @Column()
-  title!: string;
+  password!: string;
+
 }
