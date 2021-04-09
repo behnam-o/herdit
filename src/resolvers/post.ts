@@ -1,55 +1,57 @@
-import { Arg, Args, Ctx, Int, Mutation, Query, Resolver } from "type-graphql";
-import { Post } from "../entities/Post";
-import { MyContext } from "../types";
+import { Arg, Args, Ctx, Int, Mutation, Query, Resolver } from 'type-graphql';
+import { Post } from '../entities/Post';
+import { MyContext } from '../types';
 
 @Resolver()
 export class PostResolver {
-    @Query( () => [Post] )
-    posts( @Ctx() {orm}:MyContext ):Promise<Post[]> {
-        console.log(orm)
-        return orm.manager.find(Post);
-    }
+   @Query(() => [Post])
+   async posts(@Ctx() { dbManager }: MyContext): Promise<Post[]> {
+      return await dbManager.find(Post);
+   }
 
-    @Query( () => Post, {nullable:true} )
-    post( @Arg('id') id:number,
-        @Ctx() {orm}:MyContext ):Promise<Post | null> {
-        return orm.manager.findOne(Post,{id:id});
-    }
+   @Query(() => Post, { nullable: true })
+   async post(
+      @Arg('id') id: number,
+      @Ctx() { dbManager }: MyContext
+   ): Promise<Post | null> {
+      return await dbManager.findOne(Post, { id: id });
+   }
 
-    @Mutation( () => Post )
-    async createPost( @Arg('title') title:string,
-        @Ctx() {orm}:MyContext ):Promise<Post | null> {
-        const post = orm.manager.create(Post,{title:title});
-        await orm.manager.save(post);
-        return post;
-    }
+   @Mutation(() => Post)
+   async createPost(
+      @Arg('title') title: string,
+      @Ctx() { dbManager }: MyContext
+   ): Promise<Post> {
+      const post = await dbManager.create(Post, { title: title });
+      await dbManager.save(post);
+      return post;
+   }
 
-    @Mutation( () => Post, {nullable:true} )
-    async updatePost( 
-        @Arg('id') id:number,
-        @Arg('title', ()=>String, {nullable:true}) title:string,
-        @Ctx() {orm}:MyContext ):Promise<Post | null> {
-        const post = await orm.manager.findOne(Post,{id:id});
-        if( !post ){
-            return null;
-        }
-        if( typeof title !== "undefined"){
-            post.title = title;
-            await orm.manager.save(post);
-        }
-        
-        return post;
-    }
+   @Mutation(() => Post)
+   async updatePost(
+      @Arg('id') id: number,
+      @Arg('title') title: string,
+      @Ctx() { dbManager }: MyContext
+   ): Promise<Post> {
+      const post = await dbManager.findOne(Post, { id: id });
+      if (!post) {
+         return null;
+      }
+      post.title = title;
+      await dbManager.save(post);
+      return post;
+   }
 
-    @Mutation( () => Boolean )
-    async deletePostById( 
-        @Arg('id') id:number,
-        @Ctx() {orm}:MyContext ):Promise<boolean> {
-        const post = await orm.manager.findOne(Post,{id:id});
-        if( !post ){
-            return false;
-        }
-        await orm.manager.delete(Post,{id:id});
-        return true;
-    }
+   @Mutation(() => Boolean)
+   async deletePost(
+      @Arg('id') id: number,
+      @Ctx() { dbManager }: MyContext
+   ): Promise<boolean> {
+      const post = await dbManager.findOne(Post, { id: id });
+      if (!post) {
+         return false;
+      }
+      await dbManager.delete(Post, { id: id });
+      return true;
+   }
 }

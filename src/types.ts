@@ -1,5 +1,5 @@
-import { Connection } from "typeorm";
+import { EntityManager } from 'typeorm';
 
 export type MyContext = {
-    orm: Connection
-}
+   dbManager: EntityManager;
+};
