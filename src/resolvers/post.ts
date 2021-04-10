@@ -20,6 +20,7 @@ export class PostResolver {
    @Mutation(() => Post)
    async createPost(
       @Arg('title') title: string,
+      @Arg('userId') userId: number,
       @Ctx() { dbManager }: MyContext
    ): Promise<Post> {
       const post = await dbManager.create(Post, { title: title });
