@@ -17,7 +17,10 @@ const main = async () => {
          resolvers: [PostResolver, UserResolver],
          validate: false
       }),
-      context: () => ({ dbManager: dbManager })
+      context: (expressContext) => ({
+         expressContext: expressContext,
+         dbManager: dbManager
+      })
    });
    const app = express();
    appolloServer.applyMiddleware({ app });

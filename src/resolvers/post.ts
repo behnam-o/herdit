@@ -1,58 +1,48 @@
+import { AuthenticationError } from 'apollo-server-errors';
 import { Arg, Args, Ctx, Int, Mutation, Query, Resolver } from 'type-graphql';
 import { Post } from '../entities/Post';
 import { MyContext } from '../types';
+import checkAuth from '../utils/checkAuth';
+// import checkAuth from '../utils/checkAuth';
 
 @Resolver()
 export class PostResolver {
    @Query(() => [Post])
    async posts(@Ctx() { dbManager }: MyContext): Promise<Post[]> {
-      return await dbManager.find(Post);
-   }
-
-   @Query(() => Post, { nullable: true })
-   async post(
-      @Arg('id') id: number,
-      @Ctx() { dbManager }: MyContext
-   ): Promise<Post | null> {
-      return await dbManager.findOne(Post, { id: id });
+      const posts = await dbManager.find(Post);
+      posts.sort((p1, p2) => (p1.createdAt > p2.createdAt ? -1 : 1));
+      return posts;
    }
 
    @Mutation(() => Post)
    async createPost(
       @Arg('title') title: string,
       @Arg('userId') userId: number,
-      @Ctx() { dbManager }: MyContext
+      @Ctx() context: MyContext
    ): Promise<Post> {
-      const post = await dbManager.create(Post, { title: title });
-      await dbManager.save(post);
-      return post;
-   }
-
-   @Mutation(() => Post)
-   async updatePost(
-      @Arg('id') id: number,
-      @Arg('title') title: string,
-      @Ctx() { dbManager }: MyContext
-   ): Promise<Post> {
-      const post = await dbManager.findOne(Post, { id: id });
-      if (!post) {
-         return null;
-      }
-      post.title = title;
-      await dbManager.save(post);
+      const user = checkAuth(context);
+      const post = await context.dbManager.create(Post, {
+         title: title,
+         userId: user.id
+      });
+      await context.dbManager.save(post);
       return post;
    }
 
    @Mutation(() => Boolean)
    async deletePost(
       @Arg('id') id: number,
-      @Ctx() { dbManager }: MyContext
+      @Ctx() context: MyContext
    ): Promise<boolean> {
-      const post = await dbManager.findOne(Post, { id: id });
+      const user = checkAuth(context);
+      const post = await context.dbManager.findOne(Post, { id: id });
       if (!post) {
          return false;
       }
-      await dbManager.delete(Post, { id: id });
+      if (user.id !== post.userId) {
+         throw new AuthenticationError("You can't delete someone else's post!");
+      }
+      await context.dbManager.delete(Post, { id: id });
       return true;
    }
 }

@@ -4,9 +4,9 @@ import {
    Field,
    InputType,
    Mutation,
-   ObjectType,
    Resolver,
-   Query
+   Query,
+   ObjectType
 } from 'type-graphql';
 import { User } from '../entities/User';
 import { MyContext } from '../types';
@@ -26,8 +26,18 @@ class UsernamePasswordInput {
    password: string;
 }
 
-function generateToken(user) {
-   return 'AAAA';
+@ObjectType()
+class UserResponse {
+   @Field()
+   user: User;
+   @Field()
+   token: string;
+}
+
+function generateToken(user): string {
+   return jwt.sign(JSON.parse(JSON.stringify(user)), SECRET_KEY, {
+      expiresIn: '1h'
+   });
 }
 @Resolver()
 export class UserResolver {
@@ -38,11 +48,11 @@ export class UserResolver {
       return users;
    }
 
-   @Mutation(() => User)
+   @Mutation(() => UserResponse)
    async register(
       @Arg('input') input: UsernamePasswordInput,
       @Ctx() { dbManager }: MyContext
-   ): Promise<User> {
+   ): Promise<UserResponse> {
       // validate input
       const { valid, errors } = validateRegisterInputs(
          input.username,
@@ -73,19 +83,20 @@ export class UserResolver {
          password: hashedPassword
       });
       await dbManager.save(user);
-      // const token = jwt.sign(user, SECRET_KEY, { expiresIn: '1h' });
-      return user;
+      const token = generateToken(user);
+      return { user: user, token: token } as UserResponse;
    }
 
-   @Mutation(() => User)
+   @Mutation(() => UserResponse)
    async login(
       @Arg('input') input: UsernamePasswordInput,
       @Ctx() { dbManager }: MyContext
-   ): Promise<User> {
+   ): Promise<UserResponse> {
       const { valid, errors } = validateLoginInput(
          input.username,
          input.password
       );
+
       if (!valid) {
          throw new UserInputError('Validation errors', {
             errors: errors
@@ -110,9 +121,8 @@ export class UserResolver {
             errors: errors
          });
       }
-
-      // issue token
-      return user;
+      const token = generateToken(user);
+      return { user: user, token: token } as UserResponse;
    }
 
    @Mutation(() => Boolean)

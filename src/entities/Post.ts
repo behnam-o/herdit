@@ -9,6 +9,7 @@ export class Post {
    id: number;
 
    @Field(() => Int)
+   @Column()
    userId: number;
 
    @Field()
