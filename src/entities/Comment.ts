@@ -25,21 +25,15 @@ export class Comment {
    @Column({ default: new Date() })
    updatedAt: Date;
 
-   @Field(() => Int)
+   @Field()
    @Column()
-   postId: number;
+   body: string;
 
-   @Field(() => User)
    @ManyToOne(() => User, (user) => user.comments, { eager: true })
    @JoinTable()
    user: User;
 
-   @Field(() => Post)
    @ManyToOne(() => Post, (post) => post.comments)
    @JoinTable()
    post: Post;
-
-   @Field()
-   @Column()
-   body: string;
 }
