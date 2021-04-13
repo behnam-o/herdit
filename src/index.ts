@@ -7,6 +7,7 @@ import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
 import { PostResolver } from './resolvers/post';
 import { UserResolver } from './resolvers/user';
+import { CommentResolver } from './resolvers/comment';
 
 const PORT = 4000;
 
@@ -14,7 +15,7 @@ const main = async () => {
    const dbManager = (await createConnection(ormconfig)).manager;
    const appolloServer = new ApolloServer({
       schema: await buildSchema({
-         resolvers: [PostResolver, UserResolver],
+         resolvers: [PostResolver, UserResolver, CommentResolver],
          validate: false
       }),
       context: (expressContext) => ({

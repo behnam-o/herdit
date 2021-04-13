@@ -3,40 +3,43 @@ import {
    Entity,
    PrimaryGeneratedColumn,
    Column,
-   ManyToMany,
-   JoinTable,
    ManyToOne,
-   OneToMany
+   ManyToMany,
+   JoinTable
 } from 'typeorm';
-import { Comment } from './Comment';
+import { Post } from './Post';
 import { User } from './User';
 
 @ObjectType()
 @Entity()
-export class Post {
+export class Comment {
    @Field(() => Int)
    @PrimaryGeneratedColumn()
    id: number;
 
    @Field()
    @Column({ default: new Date() })
-   createdAt: Date;
+   createdAt: Date = new Date();
 
    @Field()
    @Column({ default: new Date() })
    updatedAt: Date;
 
-   @Field()
+   @Field(() => Int)
    @Column()
-   title: string;
+   postId: number;
 
    @Field(() => User)
-   @ManyToOne(() => User, (user) => user.posts, { eager: true })
+   @ManyToOne(() => User, (user) => user.comments, { eager: true })
    @JoinTable()
    user: User;
 
-   @Field(() => [Comment])
-   @OneToMany(() => Comment, (comment) => comment.post, { eager: true })
+   @Field(() => Post)
+   @ManyToOne(() => Post, (post) => post.comments)
    @JoinTable()
-   comments: Comment[];
+   post: Post;
+
+   @Field()
+   @Column()
+   body: string;
 }

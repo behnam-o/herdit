@@ -1,9 +1,10 @@
-import { createConnection } from "typeorm";
-import { Post } from "./entities/Post";
-import credentials from "./credentials";
-import { User } from "./entities/User";
+import { createConnection } from 'typeorm';
+import { Post } from './entities/Post';
+import credentials from './credentials';
+import { User } from './entities/User';
+import { Comment } from './entities/Comment';
 export default ({
-   type: "postgres",
+   type: 'postgres',
    host: credentials.db.host,
    port: credentials.db.port,
    username: credentials.db.username,
@@ -11,9 +12,9 @@ export default ({
    database: credentials.db.database,
    synchronize: true,
    logging: true,
-   entities: [Post, User],
-   migrations: ["src/migration/*.ts"],
+   entities: [Post, User, Comment],
+   migrations: ['src/migration/*.ts'],
    cli: {
-      migrationsDir: "src/migration",
-   },
+      migrationsDir: 'src/migration'
+   }
 } as unknown) as Parameters<typeof createConnection>[0];
