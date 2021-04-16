@@ -1,7 +1,6 @@
 import { AuthenticationError } from 'apollo-server-errors';
 import { Arg, Args, Ctx, Int, Mutation, Query, Resolver } from 'type-graphql';
 import { Post } from '../entities/Post';
-import { User } from '../entities/User';
 import { MyContext } from '../types';
 import checkAuth from '../utils/checkAuth';
 
