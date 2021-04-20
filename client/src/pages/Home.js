@@ -14,15 +14,14 @@ function Home() {
          <Grid.Row>
             <h1>Recent Posts</h1>
          </Grid.Row>
-
          <Grid.Row>
             {loading ? (
-               <h1>Loading Posts...</h1>
+               <h3>Loading Posts...</h3>
             ) : (
                posts &&
                posts.map((post) => {
                   return (
-                     <Grid.Column key={post.id}>
+                     <Grid.Column key={post.id} style={{ marginButtom: 20 }}>
                         <PostCard post={post}></PostCard>
                      </Grid.Column>
                   );
@@ -38,6 +37,10 @@ const FETCH_POSTS_QUERY = gql`
       posts {
          id
          title
+         createdAt
+         user {
+            username
+         }
       }
    }
 `;
