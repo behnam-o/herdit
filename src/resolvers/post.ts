@@ -9,7 +9,6 @@ export class PostResolver {
    @Query(() => [Post])
    async posts(@Ctx() { dbManager }: MyContext): Promise<Post[]> {
       const posts = await dbManager.getRepository(Post).find();
-      console.log(posts);
       posts.sort((p1, p2) => (p1.createdAt > p2.createdAt ? -1 : 1));
       return posts;
    }

@@ -44,7 +44,6 @@ export class UserResolver {
    @Query(() => [User])
    async users(@Ctx() { dbManager }: MyContext): Promise<User[]> {
       const users = await dbManager.find(User, {});
-      console.log(users);
       return users;
    }
 
