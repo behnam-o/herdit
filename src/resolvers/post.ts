@@ -1,4 +1,5 @@
 import { AuthenticationError } from 'apollo-server-errors';
+import { UserInputError } from 'apollo-server-express';
 import { Arg, Args, Ctx, Int, Mutation, Query, Resolver } from 'type-graphql';
 import { Post } from '../entities/Post';
 import { MyContext } from '../types';
@@ -19,6 +20,13 @@ export class PostResolver {
       @Ctx() context: MyContext
    ): Promise<Post> {
       const user = checkAuth(context);
+      if (title === '') {
+         throw new UserInputError('Cannot add empty post', {
+            errors: {
+               title: 'title is empty.'
+            }
+         });
+      }
       const post = await context.dbManager.getRepository(Post).create({
          title: title
       });
